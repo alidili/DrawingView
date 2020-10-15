@@ -1,0 +1,3 @@
+include ':drawing-library'
+include ':drawing-sample'
+rootProject.name = "DrawingView"
