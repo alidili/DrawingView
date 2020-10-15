@@ -1,9 +1,15 @@
 package tech.yangle.sample;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+/**
+ * 示例
+ * <p>
+ * Created by yangle on 2020/10/15.
+ * Website：http://www.yangle.tech
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override
