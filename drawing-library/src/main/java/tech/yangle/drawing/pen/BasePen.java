@@ -1,6 +1,10 @@
 package tech.yangle.drawing.pen;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint;
+
+import tech.yangle.drawing.utils.DensityUtils;
 
 /**
  * 画笔基类
@@ -8,9 +12,9 @@ import android.graphics.Paint;
  * Created by yangle on 2020/10/15.
  * Website：http://www.yangle.tech
  */
-class BasePen extends Paint {
+public class BasePen extends Paint {
 
-    public BasePen() {
+    public BasePen(Context context) {
         // 抗锯齿、防抖动
         setFlags(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
         // 画笔模式为描边

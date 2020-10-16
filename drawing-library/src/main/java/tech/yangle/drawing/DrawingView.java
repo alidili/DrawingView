@@ -4,12 +4,15 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import tech.yangle.drawing.pen.BasePen;
+import tech.yangle.drawing.pen.Eraser;
+import tech.yangle.drawing.pen.StandardPen;
+import tech.yangle.drawing.pen.TranslucentPen;
 
 /**
  * 画板
@@ -17,9 +20,9 @@ import android.view.View;
  * Created by yangle on 2020/10/15.
  * Website：http://www.yangle.tech
  */
-class DrawingView extends View {
+public class DrawingView extends View {
 
-    private Paint mPaint;
+    private BasePen mPaint;
     private Path mPath;
     private float mLastX;
     private float mLastY;
@@ -36,34 +39,20 @@ class DrawingView extends View {
 
     public DrawingView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
     }
 
-    private void init() {
-        // 抗锯齿、防抖动
-        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        // 画笔模式为描边
-        mPaint.setStyle(Paint.Style.STROKE);
-        // 拐角为圆角
-        mPaint.setStrokeJoin(Paint.Join.ROUND);
-        // 两端为圆角
-        mPaint.setStrokeCap(Paint.Cap.ROUND);
-        // 画笔宽度
-        mPaint.setStrokeWidth(50);
-        // 画笔颜色
-        mPaint.setColor(Color.BLACK);
-        // 画笔透明度，先设置颜色，再设置透明度0-255
-        mPaint.setAlpha(80);
+    public void init(int width, int height) {
+        // 不使用硬件加速
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+
+        // 双缓存机制
+        mBufferBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_4444);
+        mBufferCanvas = new Canvas(mBufferBitmap);
+
+        // 默认画笔
+        mPaint = new StandardPen(getContext());
         // 笔迹路径
         mPath = new Path();
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        // 双缓存机制
-        mBufferBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_4444);
-        mBufferCanvas = new Canvas(mBufferBitmap);
     }
 
     @Override
@@ -103,5 +92,49 @@ class DrawingView extends View {
                 break;
         }
         return true;
+    }
+
+    /**
+     * 设置画笔类型
+     *
+     * @param penType {@link PenType}
+     */
+    public void setPenType(int penType) {
+        switch (penType) {
+            case PenType.ERASER: // 橡皮擦
+                mPaint = new Eraser(getContext());
+                break;
+
+            case PenType.STANDARD_PEN: // 标准笔
+            default:
+                mPaint = new StandardPen(getContext());
+                break;
+
+            case PenType.TRANSLUCENT_PEN: // 透明笔
+                mPaint = new TranslucentPen(getContext());
+                break;
+        }
+    }
+
+    /**
+     * 设置画笔宽度
+     *
+     * @param penWidth 画笔宽度|px
+     */
+    public void setPenWidth(int penWidth) {
+        if (mPaint != null) {
+            mPaint.setStrokeWidth(penWidth);
+        }
+    }
+
+    /**
+     * 设置画笔颜色
+     *
+     * @param penColor 画笔颜色
+     */
+    public void setPenColor(int penColor) {
+        if (mPaint != null) {
+            mPaint.setColor(penColor);
+        }
     }
 }
