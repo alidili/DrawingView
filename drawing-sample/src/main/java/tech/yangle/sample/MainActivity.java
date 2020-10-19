@@ -1,5 +1,6 @@
 package tech.yangle.sample;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 
@@ -27,12 +28,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawingView = findViewById(R.id.drawing_view);
         AppCompatButton btnPen = findViewById(R.id.btn_pen);
         AppCompatButton btnEraser = findViewById(R.id.btn_eraser);
+        AppCompatButton btnReset = findViewById(R.id.btn_reset);
         btnPen.setOnClickListener(this);
         btnEraser.setOnClickListener(this);
+        btnReset.setOnClickListener(this);
 
         drawingView.init(1920, 1080);
+        drawingView.setIsCanDraw(true);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -44,8 +49,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 drawingView.setPenType(PenType.ERASER);
                 break;
 
+            case R.id.btn_reset:
+                drawingView.reset();
+                break;
+
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        drawingView.release();
     }
 }
