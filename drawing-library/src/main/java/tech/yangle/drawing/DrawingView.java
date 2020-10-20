@@ -222,7 +222,10 @@ public class DrawingView extends View {
     /**
      * 清除画布
      */
-    public void reset() {
+    public void clear() {
+        if (mBufferBitmap == null) {
+            return;
+        }
         mBufferBitmap.eraseColor(Color.TRANSPARENT);
         invalidate();
     }

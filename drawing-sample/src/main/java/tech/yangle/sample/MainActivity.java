@@ -28,10 +28,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawingView = findViewById(R.id.drawing_view);
         AppCompatButton btnPen = findViewById(R.id.btn_pen);
         AppCompatButton btnEraser = findViewById(R.id.btn_eraser);
-        AppCompatButton btnReset = findViewById(R.id.btn_reset);
+        AppCompatButton btnClear = findViewById(R.id.btn_clear);
         btnPen.setOnClickListener(this);
         btnEraser.setOnClickListener(this);
-        btnReset.setOnClickListener(this);
+        btnClear.setOnClickListener(this);
 
         drawingView.init(1920, 1080);
         drawingView.setIsCanDraw(true);
@@ -49,8 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 drawingView.setPenType(PenType.ERASER);
                 break;
 
-            case R.id.btn_reset:
-                drawingView.reset();
+            case R.id.btn_clear:
+                drawingView.clear();
                 break;
 
             default:

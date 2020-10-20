@@ -26,7 +26,7 @@
         app:layout_constraintLeft_toRightOf="@+id/btn_pen" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_reset"
+        android:id="@+id/btn_clear"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="清除"
