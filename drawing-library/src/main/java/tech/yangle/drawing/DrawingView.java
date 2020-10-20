@@ -31,7 +31,7 @@ public class DrawingView extends View {
     private Bitmap mBufferBitmap;
     private Canvas mBufferCanvas;
     // 是否为三方绘制
-    private boolean mIsTriDraw = true;
+    private boolean mIsTriDraw;
     // 是否可以绘制
     private boolean mIsCanDraw;
     // 屏幕触摸监听
