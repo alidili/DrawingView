@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="paint_style">
+        <item>红色</item>
+        <item>绿色</item>
+        <item>黄色</item>
+        <item>蓝色</item>
+    </array>
+</resources>

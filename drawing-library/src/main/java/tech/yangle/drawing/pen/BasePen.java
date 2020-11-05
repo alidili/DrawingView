@@ -14,6 +14,9 @@ import tech.yangle.drawing.utils.DensityUtils;
  */
 public class BasePen extends Paint {
 
+    // 画笔类型
+    public int mPenType = 0;
+
     public BasePen(Context context) {
         // 抗锯齿、防抖动
         setFlags(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);

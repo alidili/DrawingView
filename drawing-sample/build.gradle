@@ -32,4 +32,5 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
     implementation project(':drawing-library')
+    implementation 'com.permissionx.guolindev:permissionx:1.4.0'
 }
