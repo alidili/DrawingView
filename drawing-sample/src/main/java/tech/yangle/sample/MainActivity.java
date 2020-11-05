@@ -51,17 +51,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         drawingView = findViewById(R.id.drawing_view);
         AppCompatButton btnPen = findViewById(R.id.btn_pen);
-        AppCompatButton btn_pen_width = findViewById(R.id.btn_pen_width);
-        AppCompatButton btn_pen_color = findViewById(R.id.btn_pen_color);
+        AppCompatButton btnPenWidth = findViewById(R.id.btn_pen_width);
+        AppCompatButton btnPenColor = findViewById(R.id.btn_pen_color);
         AppCompatButton btnEraser = findViewById(R.id.btn_eraser);
         AppCompatButton btnClear = findViewById(R.id.btn_clear);
-        AppCompatButton btn_pic_graffiti = findViewById(R.id.btn_pic_graffiti);
+        AppCompatButton btnPenGraffiti = findViewById(R.id.btn_pic_graffiti);
         btnPen.setOnClickListener(this);
-        btn_pen_width.setOnClickListener(this);
-        btn_pen_color.setOnClickListener(this);
+        btnPenWidth.setOnClickListener(this);
+        btnPenColor.setOnClickListener(this);
         btnEraser.setOnClickListener(this);
         btnClear.setOnClickListener(this);
-        btn_pic_graffiti.setOnClickListener(this);
+        btnPenGraffiti.setOnClickListener(this);
     }
 
     @SuppressLint("NonConstantResourceId")
