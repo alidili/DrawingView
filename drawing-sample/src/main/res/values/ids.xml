@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="cl_root" type="id"/>
+    <item name="btn_pen_width" type="id"/>
+    <item name="btn_pen_color" type="id"/>
+    <item name="btn_pic_graffiti" type="id"/>
+
+</resources>

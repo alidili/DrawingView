@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 
+import tech.yangle.drawing.PenType;
 import tech.yangle.drawing.utils.DensityUtils;
 
 /**
@@ -17,6 +18,8 @@ public class Eraser extends BasePen {
 
     public Eraser(Context context) {
         super(context);
+        // 画笔类型
+        mPenType = PenType.ERASER;
         // 画笔宽度
         setStrokeWidth(DensityUtils.dp2px(context, 28));
         // 画笔颜色
