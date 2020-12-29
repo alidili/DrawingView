@@ -1,6 +1,5 @@
 package tech.yangle.drawing;
 
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,14 +14,15 @@ import tech.yangle.drawing.pen.TranslucentPen;
 import tech.yangle.drawing.utils.DensityUtils;
 
 /**
- * Created by lixuebin on 2020/10/31
  * 坐标点轨迹
+ * <p>
+ * Created by lixuebin on 2020/10/31
  */
 public class PointPath {
 
     private final Path mPath;
     private Paint mPaint;
-    private PointF mPrePoint = null;
+    private PointF mPrePoint;
     private float currentWidth;
     private int currentColor = Color.BLACK;
     // 画笔类型
@@ -59,7 +59,6 @@ public class PointPath {
         if (mPaint == null) {
             mPaint = new BasePen(context);
         }
-        // 注意！！！可能由于Xfermode proterty 设置，这里我们需要重置画笔属性才能生效
         if (mCurrentType == PenType.ERASER) {
             mPaint = new Eraser(context);
         } else if (mCurrentType == PenType.TRANSLUCENT_PEN) {
@@ -100,5 +99,4 @@ public class PointPath {
     public void setCurrentColor(int currentColor) {
         this.currentColor = currentColor;
     }
-
 }

@@ -1,5 +1,3 @@
 <resources>
     <string name="app_name">DrawingView</string>
-    <string name="dialog_title_color">选择画笔颜色</string>
-    <string name="dialog_negative">取消</string>
 </resources>

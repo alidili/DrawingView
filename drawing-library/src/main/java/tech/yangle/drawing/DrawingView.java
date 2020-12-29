@@ -9,7 +9,6 @@ import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -26,29 +25,29 @@ import tech.yangle.drawing.pen.TranslucentPen;
  */
 public class DrawingView extends View {
 
-    private static final String TAG = "DrawingView";
     private BasePen mPaint;
     private BasePen mTriPaint;
     private Path mPath;
     private Path mTriPath;
     private Bitmap mBufferBitmap;
     private Canvas mBufferCanvas;
-    // 是否为三方绘制
-    private boolean mIsTriDraw;
     // 是否可以绘制
     private boolean mIsCanDraw;
     // 屏幕触摸监听
     private OnTouchListener mTouchListener;
     // 初始时的缩放比例
     private float mScale = 1;
+    // 坐标偏移量
     private final PointF mOffset = new PointF(0, 0);
-    private PointF mCurrentPoint;
+    // 当前路径
     private PointPath mCurrentPath;
     // 画笔当前宽度
     private float mCurrentWidth;
     // 要涂鸦的图片
     private Bitmap mBgBitmap;
-    private float dsPicWidth, dsPicHeight, bitmapFactor, dy, dx;
+    private float mBitmapFactor;
+    private float dx;
+    private float dy;
 
     public DrawingView(Context context) {
         this(context, null);
@@ -90,7 +89,6 @@ public class DrawingView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldW, int oldH) {
         super.onSizeChanged(w, h, oldW, oldH);
-        Log.i(TAG, "[onSizeChanged] w: " + w + " h: " + h);
         init(w, h);
     }
 
@@ -102,12 +100,13 @@ public class DrawingView extends View {
             mCurrentPath.disPlayPath(getContext(), mBufferCanvas);
         }
 
+        // 显示背景图片
         if (mBgBitmap != null) {
-            contralPicBorder();
+            controlPicBorder();
             @SuppressLint("DrawAllocation")
             Matrix matrix = new Matrix();
-            // 将图片设置到 DrawingView 中
-            matrix.postScale(bitmapFactor, bitmapFactor);
+            // 将图片设置到DrawingView中
+            matrix.postScale(mBitmapFactor, mBitmapFactor);
             // 将图片平移到屏幕中心
             matrix.postTranslate(dx, dy);
             // 使用矩阵绘制位图
@@ -126,8 +125,9 @@ public class DrawingView extends View {
         if (mPath == null) {
             return true;
         }
-        mIsTriDraw = event.getMetaState() == 100;
-        if (!mIsTriDraw) {
+        // 是否为三方绘制
+        boolean isTriDraw = event.getMetaState() == 100;
+        if (!isTriDraw) {
             if (!mIsCanDraw) {
                 return true;
             }
@@ -137,17 +137,16 @@ public class DrawingView extends View {
         }
         float x = event.getX();
         float y = event.getY();
-        mCurrentPoint = new PointF((x - mOffset.x) / mScale, (y - mOffset.y) / mScale);
+        PointF currentPoint = new PointF((x - mOffset.x) / mScale, (y - mOffset.y) / mScale);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.i(TAG, "[onTouchEvent]: finger down");
-                if (mIsTriDraw) {
-                    mCurrentPath = PointPath.getInstance(mCurrentPoint, mTriPaint);
+                if (isTriDraw) {
+                    mCurrentPath = PointPath.getInstance(currentPoint, mTriPaint);
                     mCurrentPath.setCurrentPathType(mTriPaint.mPenType);
                     mCurrentPath.setCurrentWidth(mCurrentWidth);
                     mCurrentPath.setCurrentColor(mTriPaint.getColor());
                 } else {
-                    mCurrentPath = PointPath.getInstance(mCurrentPoint, mPaint);
+                    mCurrentPath = PointPath.getInstance(currentPoint, mPaint);
                     mCurrentPath.setCurrentPathType(mPaint.mPenType);
                     mCurrentPath.setCurrentWidth(mCurrentWidth);
                     mCurrentPath.setCurrentColor(mPaint.getColor());
@@ -156,16 +155,14 @@ public class DrawingView extends View {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                Log.i(TAG, "[onTouchEvent]: finger move");
                 if (mCurrentPath == null) break;
-                mCurrentPath.savePointToPath(mCurrentPoint);
+                mCurrentPath.savePointToPath(currentPoint);
                 invalidate();
                 break;
 
             case MotionEvent.ACTION_UP:
-                Log.i(TAG, "[onTouchEvent]: finger up");
                 // ACTION_UP时，将当前一笔的笔迹，绘制到缓存画布上
-                if (mIsTriDraw) {
+                if (isTriDraw) {
                     mBufferCanvas.drawPath(mTriPath, mTriPaint);
                     mTriPath.reset();
                 } else {
@@ -174,7 +171,7 @@ public class DrawingView extends View {
                 }
                 if (mCurrentPath != null) {
                     // 将一条完整的一条路径保存下来
-                    mCurrentPath.savePointToPath(mCurrentPoint);
+                    mCurrentPath.savePointToPath(currentPoint);
                 }
                 // 重新置空
                 mCurrentPath = null;
@@ -188,21 +185,22 @@ public class DrawingView extends View {
     /**
      * 在画布上的控制位图边界
      */
-    private void contralPicBorder() {
-        // 拿到图片的宽和高
+    private void controlPicBorder() {
+        // 图片宽高
         float width = (float) mBgBitmap.getWidth();
         float height = (float) mBgBitmap.getHeight();
+        float dsPicWidth, dsPicHeight;
         if (width > height) {
             dsPicWidth = getWidth() - 2;
             dsPicHeight = height / width * dsPicWidth;
-            bitmapFactor = dsPicHeight / dsPicWidth;
+            mBitmapFactor = dsPicHeight / dsPicWidth;
         } else {
             dsPicHeight = getHeight() - 2;
             dsPicWidth = width / height * dsPicHeight;
-            bitmapFactor = dsPicWidth / dsPicHeight;
+            mBitmapFactor = dsPicWidth / dsPicHeight;
         }
-        dy = (getHeight() - (height * bitmapFactor)) / 2;
-        dx = (getWidth() - (width * bitmapFactor)) / 2;
+        dy = (getHeight() - (height * mBitmapFactor)) / 2;
+        dx = (getWidth() - (width * mBitmapFactor)) / 2;
     }
 
     /**
@@ -379,17 +377,17 @@ public class DrawingView extends View {
     }
 
     /**
-     * 放大画板后，对pointPath坐标进行缩放平移坐标点 绘画
+     * 放大画板后，对pointPath坐标进行缩放平移坐标点
      *
-     * @param scaleX        缩放值
-     * @param mMatrixValue1 x轴 坐标点偏移量
-     * @param mMatrixValue2 y轴 坐标点偏移量
+     * @param scaleX       缩放值
+     * @param matrixValue1 x轴 坐标点偏移量
+     * @param matrixValue2 y轴 坐标点偏移量
      */
-    public void setScaleAndOffset(float scaleX, float mMatrixValue1, float mMatrixValue2) {
+    public void setScaleAndOffset(float scaleX, float matrixValue1, float matrixValue2) {
         mScale = scaleX;
         mCurrentWidth = PointPath.NORMAL_LINE_WIDTH / mScale;
-        mOffset.x = mMatrixValue1;
-        mOffset.y = mMatrixValue2;
+        mOffset.x = matrixValue1;
+        mOffset.y = matrixValue2;
     }
 
     /**
@@ -401,5 +399,4 @@ public class DrawingView extends View {
         mBgBitmap = bitmap;
         invalidate();
     }
-
 }

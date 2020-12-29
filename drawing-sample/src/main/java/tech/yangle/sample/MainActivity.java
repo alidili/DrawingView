@@ -14,7 +14,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.permissionx.guolindev.PermissionX;
@@ -32,12 +31,12 @@ import tech.yangle.drawing.utils.BitmapUtils;
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String TAG = "MainActivity";
+    private final String TAG = "MainActivity";
     private DrawingView drawingView;
     private ScaleDrawingView scaleDrawingView;
     // 默认不选中
     private int mSelectIndex = -1;
-    private static final int REQUEST_CODE_PICTURE_GALLERY = 100;
+    private final int REQUEST_CODE_PICTURE_GALLERY = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,50 +45,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // 动态替换根布局
         ConstraintLayout rootView = findViewById(R.id.cl_root);
-        scaleDrawingView = new ScaleDrawingView(getApplicationContext());
-        rootView.addView(scaleDrawingView, 1);
+        scaleDrawingView = new ScaleDrawingView(this);
+        rootView.addView(scaleDrawingView);
 
         drawingView = findViewById(R.id.drawing_view);
-        AppCompatButton btnPen = findViewById(R.id.btn_pen);
-        AppCompatButton btnPenWidth = findViewById(R.id.btn_pen_width);
-        AppCompatButton btnPenColor = findViewById(R.id.btn_pen_color);
-        AppCompatButton btnEraser = findViewById(R.id.btn_eraser);
-        AppCompatButton btnClear = findViewById(R.id.btn_clear);
-        AppCompatButton btnPenGraffiti = findViewById(R.id.btn_pic_graffiti);
-        btnPen.setOnClickListener(this);
-        btnPenWidth.setOnClickListener(this);
-        btnPenColor.setOnClickListener(this);
-        btnEraser.setOnClickListener(this);
-        btnClear.setOnClickListener(this);
-        btnPenGraffiti.setOnClickListener(this);
+        findViewById(R.id.btn_pen).setOnClickListener(this);
+        findViewById(R.id.btn_pen_width).setOnClickListener(this);
+        findViewById(R.id.btn_pen_color).setOnClickListener(this);
+        findViewById(R.id.btn_eraser).setOnClickListener(this);
+        findViewById(R.id.btn_clear).setOnClickListener(this);
+        findViewById(R.id.btn_pic_graffiti).setOnClickListener(this);
     }
 
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_pen:
+            case R.id.btn_pen: // 画笔
                 scaleDrawingView.setPenCurrentType(PenType.STANDARD_PEN);
                 break;
 
-            case R.id.btn_pen_width: // 设置画笔宽度
+            case R.id.btn_pen_width: // 画笔宽度
                 scaleDrawingView.setPaintWidth(10);
                 break;
 
-            case R.id.btn_pen_color: // 设置画笔颜色
+            case R.id.btn_pen_color: // 画笔颜色
                 scaleDrawingView.setPenCurrentType(PenType.STANDARD_PEN);
                 showPenColorDialog();
                 break;
 
-            case R.id.btn_eraser: // 设置橡皮檫
+            case R.id.btn_eraser: // 橡皮
                 scaleDrawingView.setPenCurrentType(PenType.ERASER);
                 break;
 
-            case R.id.btn_clear:
-                scaleDrawingView.clear(); // 撤销
+            case R.id.btn_clear: // 清除
+                scaleDrawingView.clear();
                 break;
 
-            case R.id.btn_pic_graffiti: // 设置图片涂鸦
+            case R.id.btn_pic_graffiti: // 图片涂鸦
                 startPicGraffiti();
                 break;
 
@@ -107,22 +100,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .explainReasonBeforeRequest()
                 .onExplainRequestReason((scope, deniedList, beforeRequest) ->
                         scope.showRequestReasonDialog(deniedList,
-                                "即将申请的权限是程序必须依赖的权限",
-                                "我已明白"))
+                                "即将申请的权限是程序必须依赖的权限", "我已明白"))
                 .onForwardToSettings((scope, deniedList) ->
                         scope.showForwardToSettingsDialog(deniedList,
-                                "您需要去应用程序设置当中手动开启权限",
-                                "我已明白"))
+                                "您需要去应用程序设置当中手动开启权限", "我已明白"))
                 .request((allGranted, grantedList, deniedList) -> {
                     if (allGranted) {
-                        Log.i(TAG, " [PermissionX]: 所有申请的权限都已通过 ");
+                        Log.i(TAG, " [PermissionX]: 所有申请的权限都已通过");
                         Intent intent = new Intent(Intent.ACTION_PICK,
                                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         startActivityForResult(intent, REQUEST_CODE_PICTURE_GALLERY);
-
                     } else {
-                        Toast.makeText(MainActivity.this, "您拒绝了如下权限："
-                                + deniedList.size(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, "您拒绝了如下权限：" +
+                                deniedList, Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -137,11 +127,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Bitmap bitmap = BitmapUtils.decodeBitmapFromResource(this, data.getData(),
                     reqWidth, reqHeight);
             if (bitmap != null) {
-                Log.i(TAG, "[onActivityResult] 缩略图高度：" + bitmap.getHeight() +
-                        " 宽度： " + bitmap.getWidth());
+                Log.i(TAG, "[onActivityResult] 高度:" + bitmap.getHeight() + ", 宽度:" + bitmap.getWidth());
                 scaleDrawingView.setBackgroundPic(bitmap);
             } else {
-                Log.i(TAG, "[onActivityResult]: bitmap is null");
+                Log.i(TAG, "[onActivityResult] bitmap is null");
             }
         }
     }
@@ -151,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void showPenColorDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.dialog_title_color);
+        builder.setTitle("选择画笔颜色");
         String[] stringArray = getResources().getStringArray(R.array.paint_style);
         builder.setSingleChoiceItems(stringArray, mSelectIndex, (dialog, which) -> {
             mSelectIndex = which;
@@ -160,22 +149,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case "红色":
                     scaleDrawingView.setPaintColor(Color.RED);
                     break;
+
                 case "绿色":
                     scaleDrawingView.setPaintColor(Color.GREEN);
                     break;
+
                 case "黄色":
                     scaleDrawingView.setPaintColor(Color.YELLOW);
                     break;
+
                 case "蓝色":
                     scaleDrawingView.setPaintColor(Color.BLUE);
                     break;
+
                 default:
                     scaleDrawingView.setPaintColor(Color.BLACK);
                     break;
             }
             dialog.dismiss();
         });
-        builder.setNegativeButton(R.string.dialog_negative, (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton("取消", (dialog, which) -> dialog.dismiss());
         builder.create().show();
     }
 

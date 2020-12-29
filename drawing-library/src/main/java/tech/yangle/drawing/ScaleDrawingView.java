@@ -3,25 +3,17 @@ package tech.yangle.drawing;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import tech.yangle.drawing.utils.TouchEventUtils;
-
 /**
- * Created by lixuebin on 2020/10/30
- * <p>
  * 支持可缩放的绘画板
  * <p>
- * this view  can  double finger scale,double finger translution,and single finger event
- * will give to drawingView  to draw path
- * </p>
+ * Created by lixuebin on 2020/10/30
  */
 public class ScaleDrawingView extends RelativeLayout {
 
-    private static final String TAG = "ScaleDrawingView";
     private static final float MAX_SCALE = 10.0F;
     private static final float MIN_SCALE = 1.0F;
     // 用于存放矩阵的9个值
@@ -48,11 +40,10 @@ public class ScaleDrawingView extends RelativeLayout {
             case MotionEvent.ACTION_DOWN:
                 return drawingView.onTouchEvent(ev);
 
-            case MotionEvent.ACTION_POINTER_DOWN:// 用户第二个手指接触到了屏幕
+            case MotionEvent.ACTION_POINTER_DOWN:
                 isTranslate = true;
-                mOldDistance = TouchEventUtils.spacingOfTwoFinger(ev);
-                mOldPointer = TouchEventUtils.middleOfTwoFinger(ev);
-                Log.i(TAG, "[dispatchTouchEvent]: action_pointer_down");
+                mOldDistance = spacingOfTwoFinger(ev);
+                mOldPointer = middleOfTwoFinger(ev);
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -60,22 +51,21 @@ public class ScaleDrawingView extends RelativeLayout {
                     return drawingView.onTouchEvent(ev);
                 }
                 if (ev.getPointerCount() == 2) {
-                    float newDistance = TouchEventUtils.spacingOfTwoFinger(ev);
+                    float newDistance = spacingOfTwoFinger(ev);
                     float scaleFactor = newDistance / mOldDistance;
                     scaleFactor = checkingScale(drawingView.getScaleX(), scaleFactor);
                     // 设置缩放比例
                     drawingView.setScaleX(drawingView.getScaleY() * scaleFactor);
                     drawingView.setScaleY(drawingView.getScaleY() * scaleFactor);
                     mOldDistance = newDistance;
-                    PointF newPointer = TouchEventUtils.middleOfTwoFinger(ev);
+                    PointF newPointer = middleOfTwoFinger(ev);
                     drawingView.setX(drawingView.getX() + newPointer.x - mOldPointer.x);
                     drawingView.setY(drawingView.getY() + newPointer.y - mOldPointer.y);
                     mOldPointer = newPointer;
                     checkingBorder();
-                    Log.i(TAG, "[dispatchTouchEvent]: action_move");
                 }
 
-            case MotionEvent.ACTION_POINTER_UP:  //用户一个手指离开了屏幕
+            case MotionEvent.ACTION_POINTER_UP:
                 break;
 
             case MotionEvent.ACTION_UP:
@@ -84,18 +74,12 @@ public class ScaleDrawingView extends RelativeLayout {
                 }
                 // 获取当前缩放比例
                 drawingView.getMatrix().getValues(mMatrixValues);
-                drawingView.setScaleAndOffset(drawingView.getScaleX(),
-                        mMatrixValues[2], mMatrixValues[5]);
+                drawingView.setScaleAndOffset(drawingView.getScaleX(), mMatrixValues[2],
+                        mMatrixValues[5]);
                 isTranslate = false;
-                Log.i(TAG, "[dispatchTouchEvent]: action_up");
                 break;
         }
         return true;
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldW, int oldH) {
-        super.onSizeChanged(w, h, oldW, oldH);
     }
 
     /**
@@ -145,9 +129,6 @@ public class ScaleDrawingView extends RelativeLayout {
             }
 
             if (mMatrixValues[5] > -(mBorderY * (drawingView.getScaleY() - 1))) {
-                Log.i(TAG, " [offsetBorder] ---->> " +
-                        "offsetY:" + mMatrixValues[5] + " borderY:" + mBorderY +
-                        " scale:" + getScaleY() + " scaleOffset:" + mBorderY * (getScaleY() - 1));
                 offset.y = -(mMatrixValues[5] + mBorderY * (drawingView.getScaleY() - 1));
             }
 
@@ -161,6 +142,31 @@ public class ScaleDrawingView extends RelativeLayout {
     }
 
     /**
+     * 计算两个触点之间的距离
+     *
+     * @param event 触控事件
+     * @return 两个触点之间的距离
+     */
+    public float spacingOfTwoFinger(MotionEvent event) {
+        if (event.getPointerCount() != 2) return 0;
+        float dx = event.getX(0) - event.getX(1);
+        float dy = event.getY(0) - event.getY(1);
+        return (float) Math.sqrt(dx * dx + dy * dy);
+    }
+
+    /**
+     * 获取两个触点中间的坐标点
+     *
+     * @param event 触控事件
+     * @return 坐标点
+     */
+    public PointF middleOfTwoFinger(MotionEvent event) {
+        float mx = (event.getX(0) + event.getX(1)) / 2;
+        float my = (event.getY(0) + event.getY(1)) / 2;
+        return new PointF(mx, my);
+    }
+
+    /**
      * 设置画笔类型
      *
      * @param penType 画笔类型
@@ -170,7 +176,7 @@ public class ScaleDrawingView extends RelativeLayout {
     }
 
     /**
-     * 撤销画画板操作
+     * 清除画布
      */
     public void clear() {
         drawingView.clear();
@@ -185,6 +191,11 @@ public class ScaleDrawingView extends RelativeLayout {
         drawingView.setPenWidth(penWidth);
     }
 
+    /**
+     * 设置画笔颜色
+     *
+     * @param penColor 画笔颜色
+     */
     public void setPaintColor(int penColor) {
         drawingView.setPenColor(penColor);
     }
