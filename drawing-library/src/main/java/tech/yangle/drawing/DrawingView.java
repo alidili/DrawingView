@@ -35,6 +35,8 @@ public class DrawingView extends View {
     private boolean mIsCanDraw;
     // 屏幕触摸监听
     private OnTouchListener mTouchListener;
+    // 原始屏幕触摸监听
+    private OnTouchListener mOriginTouchListener;
     // 初始时的缩放比例
     private float mScale = 1;
     // 坐标偏移量
@@ -129,6 +131,9 @@ public class DrawingView extends View {
         boolean isTriDraw = event.getMetaState() == 100;
         if (!isTriDraw) {
             if (!mIsCanDraw) {
+                if (mOriginTouchListener != null) {
+                    mOriginTouchListener.onTouch(event);
+                }
                 return super.onTouchEvent(event);
             }
             if (mTouchListener != null) {
@@ -362,6 +367,15 @@ public class DrawingView extends View {
      */
     public void setOnTouchListener(OnTouchListener onTouchListener) {
         this.mTouchListener = onTouchListener;
+    }
+
+    /**
+     * 设置原始的屏幕触摸监听
+     *
+     * @param onOriginTouchListener OnTouchListener
+     */
+    public void setOnOriginTouchListener(OnTouchListener onOriginTouchListener) {
+        this.mOriginTouchListener = onOriginTouchListener;
     }
 
     /**
