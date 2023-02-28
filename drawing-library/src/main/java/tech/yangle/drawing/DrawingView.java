@@ -132,12 +132,12 @@ public class DrawingView extends View {
         if (!isTriDraw) {
             if (!mIsCanDraw) {
                 if (mOriginTouchListener != null) {
-                    mOriginTouchListener.onTouch(this, event);
+                    mOriginTouchListener.onTouch(event);
                 }
                 return super.onTouchEvent(event);
             }
             if (mTouchListener != null) {
-                mTouchListener.onTouch(this, event);
+                mTouchListener.onTouch(event);
             }
         }
         float x = event.getX();
@@ -365,7 +365,7 @@ public class DrawingView extends View {
      *
      * @param onTouchListener OnTouchListener
      */
-    public void setOnTouchListener(View.OnTouchListener onTouchListener) {
+    public void setOnTouchListener(OnTouchListener onTouchListener) {
         this.mTouchListener = onTouchListener;
     }
 
@@ -374,8 +374,20 @@ public class DrawingView extends View {
      *
      * @param onOriginTouchListener OnTouchListener
      */
-    public void setOnOriginTouchListener(View.OnTouchListener onOriginTouchListener) {
+    public void setOnOriginTouchListener(OnTouchListener onOriginTouchListener) {
         this.mOriginTouchListener = onOriginTouchListener;
+    }
+
+    /**
+     * 屏幕触摸监听
+     */
+    public interface OnTouchListener {
+        /**
+         * 回调方法
+         *
+         * @param motionEvent MotionEvent
+         */
+        void onTouch(MotionEvent motionEvent);
     }
 
     /**
