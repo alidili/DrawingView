@@ -125,7 +125,7 @@ public class DrawingView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (mPath == null) {
-            return super.onTouchEvent(event);
+            return true;
         }
         // 是否为三方绘制
         boolean isTriDraw = event.getMetaState() == 100;
@@ -134,7 +134,7 @@ public class DrawingView extends View {
                 if (mOriginTouchListener != null) {
                     mOriginTouchListener.onTouch(event);
                 }
-                return super.onTouchEvent(event);
+                return true;
             }
             if (mTouchListener != null) {
                 mTouchListener.onTouch(event);
