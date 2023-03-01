@@ -39,6 +39,8 @@ public class DrawingView extends View {
     private boolean mIsCanDraw;
     // 屏幕触摸监听
     private OnTouchListener mTouchListener;
+    // 原始屏幕触摸监听
+    private OnTouchListener mOriginTouchListener;
 
     public DrawingView(Context context) {
         this(context, null);
@@ -98,6 +100,9 @@ public class DrawingView extends View {
         mIsTriDraw = event.getMetaState() == 100;
         if (!mIsTriDraw) {
             if (!mIsCanDraw) {
+                if (mOriginTouchListener != null) {
+                    mOriginTouchListener.onTouch(event);
+                }
                 return true;
             }
             if (mTouchListener != null) {
@@ -304,6 +309,15 @@ public class DrawingView extends View {
      */
     public void setOnTouchListener(OnTouchListener onTouchListener) {
         this.mTouchListener = onTouchListener;
+    }
+
+    /**
+     * 设置原始的屏幕触摸监听
+     *
+     * @param onOriginTouchListener OnTouchListener
+     */
+    public void setOnOriginTouchListener(OnTouchListener onOriginTouchListener) {
+        this.mOriginTouchListener = onOriginTouchListener;
     }
 
     /**
