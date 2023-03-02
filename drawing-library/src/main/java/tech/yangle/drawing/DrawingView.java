@@ -272,6 +272,15 @@ public class DrawingView extends View {
     }
 
     /**
+     * 获取绘制模式
+     *
+     * @return true: 绘制模式 false: 非绘制模式
+     */
+    public boolean isCanDraw() {
+        return mIsCanDraw;
+    }
+
+    /**
      * 清除画布
      */
     public void clear() {
